@@ -1,0 +1,39 @@
+{
+  "name": "@madar/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --sourcemap --shims",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src test",
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx src/cli/migrate.ts",
+    "seed": "tsx src/cli/seed.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@madar/sim-engine": "workspace:*",
+    "drizzle-orm": "0.44.7",
+    "pg": "8.16.3",
+    "argon2": "0.43.1",
+    "@madar/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@madar/config": "workspace:*",
+    "@types/pg": "8.15.5",
+    "drizzle-kit": "0.31.4",
+    "tsup": "8.5.0",
+    "tsx": "4.20.3"
+  }
+}

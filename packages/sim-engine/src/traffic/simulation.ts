@@ -52,8 +52,8 @@ export const DEFAULT_PARAMS: ScenarioParams = {
   incidents: [],
   rerouting: true,
   sampleInterval: 60,
-  frameInterval: 2,
-  maxFrameVehicles: 1500,
+  frameInterval: 4,
+  maxFrameVehicles: 1000,
 };
 
 const VEHICLE_SPACING = 7.5; // m per queued vehicle per lane (jam spacing)
