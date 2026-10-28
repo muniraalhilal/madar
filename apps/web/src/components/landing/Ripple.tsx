@@ -64,17 +64,17 @@ export function Ripple() {
 
   return (
     <section ref={track} className={reduced ? 'relative bg-midnight' : 'relative h-[320svh] bg-midnight'} aria-labelledby="ripple-title">
-      <div className="sticky top-0 flex min-h-[100svh] flex-col justify-center overflow-hidden py-20">
+      <div className="sticky top-0 flex min-h-[100svh] flex-col justify-center overflow-hidden pb-6 pt-20 md:py-20">
         <div className="mx-auto grid w-full max-w-[1480px] gap-8 px-5 md:px-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:items-center lg:gap-16">
           <div>
-            <h2 id="ripple-title" className="display-caps text-[clamp(1.9rem,4vw,3.8rem)] text-white">
+            <h2 id="ripple-title" className="display-caps text-[clamp(1.6rem,4vw,3.8rem)] text-white">
               Every change
               <br />
               creates a ripple.
             </h2>
-            <ol className="mt-8 space-y-1">
+            <ol className="mt-5 space-y-1 md:mt-8">
               {steps.map((s, i) => (
-                <li key={s.n} className={`grid grid-cols-[2.4rem_1fr] gap-x-3 rounded-2xl px-3 py-3 transition-colors duration-500 ${i === step ? 'bg-white/[0.06]' : ''}`} aria-current={i === step ? 'step' : undefined}>
+                <li key={s.n} className={`grid-cols-[2.4rem_1fr] gap-x-3 rounded-2xl px-3 py-3 transition-colors duration-500 ${i === step ? 'grid bg-white/[0.06]' : reduced ? 'grid' : 'hidden md:grid'}`} aria-current={i === step ? 'step' : undefined}>
                   <span className={`font-display text-lg transition-colors ${i === step ? 'text-lavender-soft' : 'text-sand/35'}`}>{s.n}</span>
                   <div>
                     <p className={`font-medium transition-colors ${i === step ? 'text-white' : 'text-sand/45'}`}>{s.title}</p>

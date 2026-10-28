@@ -194,6 +194,11 @@ export async function render(presetName, width, height, supersample = 1) {
       fragmentShader: `varying vec3 vN; varying vec3 vV; void main(){ float f = pow(max(dot(vN, vV),0.0), 2.5); gl_FragColor = vec4(vec3(0.55,0.48,1.0)*f*1.6, 1.0); }`,
     }));
     halo.position.copy(local);
+    // The halo is a screen-space glow: keep it (and the orb) out of the planar reflection,
+    // where its view-dependent falloff renders as a hard square.
+    orb.layers.set(1);
+    halo.layers.set(1);
+    camera.layers.enable(1);
     scene.add(halo);
   }
 

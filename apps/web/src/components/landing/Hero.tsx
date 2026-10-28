@@ -124,7 +124,7 @@ export function Hero() {
             in motion.
           </h1>
           <p className="mt-6 max-w-[34ch] text-[clamp(1.05rem,1.5vw,1.3rem)] leading-relaxed text-sand/85">
-            Explore the systems shaping tomorrow&rsquo;s cities&nbsp;&mdash; then change one and watch what follows.
+            Explore the systems shaping tomorrow&rsquo;s cities.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-6">
             <Link href="/app" className="pill pill-primary">
@@ -149,7 +149,7 @@ export function Hero() {
           <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6 px-5 py-3.5 text-[0.68rem] tracking-[0.32em] text-sand/70 uppercase md:px-10">
             <span className="hidden md:inline">Buildings / People / Infrastructure / Environment / Possibilities</span>
             <span className="md:hidden">Buildings / People / Possibilities</span>
-            <span className="tracking-[0.12em] normal-case text-sand/55">Rendered by MADAR · fictional city</span>
+            <span className="hidden tracking-[0.12em] normal-case text-sand/55 sm:inline">Rendered by MADAR · fictional city</span>
           </div>
         </div>
       </div>

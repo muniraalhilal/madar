@@ -143,7 +143,7 @@ function Buildings({ city, selected, onSelect }: { city: CityNetwork; selected: 
       // tall towers taper visually: narrower box on top of a podium
       const tex = base.clone();
       tex.needsUpdate = true;
-      tex.repeat.set(Math.max(1, Math.round(w / 24)), Math.max(1, Math.round(b.floors / 8)));
+      tex.repeat.set(Math.max(1, Math.round(w / 80)), Math.max(1, Math.round(b.floors / 22)));
       tex.offset.set((i * 0.37) % 1, (i * 0.13) % 1);
       return { b, w, d, cx, cy, tex };
     });
@@ -171,7 +171,7 @@ function Buildings({ city, selected, onSelect }: { city: CityNetwork; selected: 
             )}
             <mesh position={[0, b.height / 2, 0]} onClick={select} onPointerOver={() => (document.body.style.cursor = 'pointer')} onPointerOut={() => (document.body.style.cursor = '')}>
               <boxGeometry args={[shaftW, b.height, shaftD]} />
-              <meshStandardMaterial color={color} map={tex} emissiveMap={tex} emissive={'#ffffff'} emissiveIntensity={0.55} roughness={0.35} metalness={0.45} />
+              <meshStandardMaterial color={color} map={tex} emissiveMap={tex} emissive={'#ffffff'} emissiveIntensity={0.38} roughness={0.3} metalness={0.5} />
             </mesh>
             {b.name === 'Madar Tower' && (
               <mesh position={[0, b.height + 22, 0]} rotation={[Math.PI / 2 + 0.35, 0, 0.2]}>
@@ -301,7 +301,7 @@ export function CityScene({
 }) {
   return (
     <Canvas
-      camera={{ position: [1700, 2100, 2600], fov: 38, near: 5, far: 30000 }}
+      camera={{ position: [1500, 1250, 2300], fov: 40, near: 5, far: 30000 }}
       dpr={[1, 2]}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       onPointerMissed={() => onSelect(null)}
