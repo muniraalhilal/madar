@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="MADAR — مَدار — The City in Motion."><defs><linearGradient id="bg-lavender" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A99BFF"/><stop offset="1" stop-color="#6F5FE6"/></linearGradient></defs><rect width="1024" height="1024" rx="228" fill="url(#bg-lavender)"/><g transform="translate(132 132) scale(3.8)"><defs>
+<radialGradient id="orb-app-lavender" cx="0.36" cy="0.3" r="0.78"><stop offset="0" stop-color="#FBF9FF"/><stop offset="0.32" stop-color="#D6CCFF"/><stop offset="0.72" stop-color="#8070E8"/><stop offset="1" stop-color="#2E2670"/></radialGradient>
+<linearGradient id="ring-app-lavender" x1="0" y1="0.5" x2="1" y2="0.5"><stop offset="0" stop-color="#6E5FE8"/><stop offset="0.55" stop-color="#B4A3E6"/><stop offset="1" stop-color="#F3F0FF"/></linearGradient>
+<radialGradient id="dot-app-lavender" cx="0.4" cy="0.4" r="0.7"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B4A3E6"/></radialGradient>
+<filter id="glow-app-lavender" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<g transform="rotate(-24 100 100)" fill="none" stroke="url(#ring-app-lavender)" stroke-linecap="round">
+<path d="M 16 100 A 84 33 0 0 1 184 100" stroke-width="4.16" opacity="0.6"/>
+</g>
+<circle cx="100" cy="102" r="33" fill="url(#orb-app-lavender)"/>
+<circle cx="100" cy="102" r="33" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="0.8"/>
+<g transform="rotate(-24 100 100)">
+<path d="M 184 100 A 84 33 0 0 1 16 100" fill="none" stroke="url(#ring-app-lavender)" stroke-width="5.2" stroke-linecap="round" filter="url(#glow-app-lavender)"/>
+<circle cx="151.72" cy="74.00" r="7.5" fill="url(#dot-app-lavender)" filter="url(#glow-app-lavender)"/>
+</g></g></svg>

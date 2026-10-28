@@ -1,0 +1,30 @@
+{
+  "name": "@madar/brand",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MADAR identity: logo geometry, design tokens and generated SVG/PNG assets.",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./tokens.css": "./src/tokens.css",
+    "./svg/*": "./svg/*"
+  },
+  "scripts": {
+    "build:assets": "node scripts/build-logos.mjs",
+    "build": "echo brand: source package",
+    "lint": "echo ok",
+    "test": "echo ok",
+    "typecheck": "echo ok"
+  },
+  "devDependencies": {
+    "@expo-google-fonts/ibm-plex-sans-arabic": "0.4.1",
+    "@expo-google-fonts/montserrat": "0.4.1",
+    "harfbuzzjs": "0.4.12",
+    "sharp": "0.34.3"
+  },
+  "types": "./src/index.d.ts"
+}

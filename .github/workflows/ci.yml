@@ -1,0 +1,32 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_USER: madar, POSTGRES_PASSWORD: madar, POSTGRES_DB: madar_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U madar" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7.2-alpine
+        ports: ['6379:6379']
+    env:
+      TEST_DATABASE_URL: postgres://madar:madar@localhost:5432/madar_test
+      TEST_REDIS_URL: redis://localhost:6379/5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+      - run: pnpm -r --filter ./packages/** --filter @madar/api --filter @madar/worker run typecheck
+      - run: pnpm --filter @madar/web typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm --filter @madar/api build && pnpm --filter @madar/worker build && pnpm --filter @madar/web build

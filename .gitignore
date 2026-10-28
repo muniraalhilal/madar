@@ -11,3 +11,6 @@ playwright-report
 test-results
 tools/render/out
 .DS_Store
+test-results
+apps/web/.next
+dump.rdb

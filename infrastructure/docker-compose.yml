@@ -1,0 +1,57 @@
+# Local infrastructure for MADAR.
+#   docker compose -f infrastructure/docker-compose.yml up -d db redis      # just the services
+#   docker compose -f infrastructure/docker-compose.yml --profile app up    # everything in containers
+name: madar
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: madar
+      POSTGRES_PASSWORD: madar
+      POSTGRES_DB: madar
+    ports: ['5432:5432']
+    volumes: ['pgdata:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U madar -d madar']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7.2-alpine
+    ports: ['6379:6379']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      retries: 20
+
+  api:
+    profiles: [app]
+    build: { context: .., dockerfile: infrastructure/Dockerfile, target: api }
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgres://madar:madar@db:5432/madar
+      REDIS_URL: redis://redis:6379
+    ports: ['4000:4000']
+    depends_on: { db: { condition: service_healthy }, redis: { condition: service_healthy } }
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/api/health']
+      interval: 10s
+      retries: 10
+  worker:
+    profiles: [app]
+    build: { context: .., dockerfile: infrastructure/Dockerfile, target: worker }
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgres://madar:madar@db:5432/madar
+      REDIS_URL: redis://redis:6379
+    depends_on: { api: { condition: service_healthy } }
+  web:
+    profiles: [app]
+    build: { context: .., dockerfile: infrastructure/Dockerfile, target: web }
+    environment:
+      API_INTERNAL_URL: http://api:4000
+      NEXT_PUBLIC_WS_URL: http://localhost:4000
+    ports: ['3000:3000']
+    depends_on: [api]
+volumes:
+  pgdata:

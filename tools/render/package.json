@@ -1,0 +1,9 @@
+{
+  "name": "@madar/render",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline cinematic renderer for MADAR marketing imagery (Three.js in headless Chromium).",
+  "scripts": { "render": "node render.mjs" },
+  "dependencies": { "three": "0.180.0", "sharp": "0.34.3", "playwright": "1.63.0", "esbuild": "0.25.9" }
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MADAR — مَدار — The City in Motion."><rect width="64" height="64" rx="14" fill="#0B0E1A"/><g transform="translate(2 2) scale(0.3)"><defs>
+<radialGradient id="orb-fav" cx="0.36" cy="0.3" r="0.78"><stop offset="0" stop-color="#FBF9FF"/><stop offset="0.32" stop-color="#D6CCFF"/><stop offset="0.72" stop-color="#8070E8"/><stop offset="1" stop-color="#2E2670"/></radialGradient>
+<linearGradient id="ring-fav" x1="0" y1="0.5" x2="1" y2="0.5"><stop offset="0" stop-color="#6E5FE8"/><stop offset="0.55" stop-color="#B4A3E6"/><stop offset="1" stop-color="#F3F0FF"/></linearGradient>
+<radialGradient id="dot-fav" cx="0.4" cy="0.4" r="0.7"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B4A3E6"/></radialGradient>
+</defs>
+<g transform="rotate(-24 100 100)" fill="none" stroke="url(#ring-fav)" stroke-linecap="round">
+<path d="M 16 100 A 84 33 0 0 1 184 100" stroke-width="7.2" opacity="0.9"/>
+</g>
+<circle cx="100" cy="102" r="30" fill="url(#orb-fav)"/>
+
+<g transform="rotate(-24 100 100)">
+<path d="M 184 100 A 84 33 0 0 1 16 100" fill="none" stroke="url(#ring-fav)" stroke-width="9" stroke-linecap="round"/>
+<circle cx="151.72" cy="74.00" r="11" fill="url(#dot-fav)"/>
+</g></g></svg>

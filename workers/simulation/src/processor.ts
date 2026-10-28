@@ -146,17 +146,17 @@ export async function processRun(runId: string, deps: ProcessorDeps): Promise<Ru
       body: `Average travel time ${(result.summary.meanTravelTime / 60).toFixed(1)} min · ${result.summary.tripsCompleted.toLocaleString('en-US')} trips completed`,
       link: `/app/results/${runId}`,
     });
-    log.info({ runId, ms: Date.now() - started, fingerprint: result.fingerprint }, 'run completed');
+    log.info({ ms: Date.now() - started, fingerprint: result.fingerprint }, 'run completed');
     return 'completed';
   } catch (err) {
     await redis.del(RUN_CONTROL_KEY(runId));
     if (err instanceof RunCancelled) {
       await setStatus('cancelled', { finishedAt: new Date() });
-      log.info({ runId }, 'run cancelled');
+      log.info('run cancelled');
       return 'cancelled';
     }
     const message = err instanceof Error ? err.message : String(err);
-    log.error({ runId, err }, 'run failed');
+    log.error({ err }, 'run failed');
     await setStatus('failed', { finishedAt: new Date(), errorMessage: message.slice(0, 500) });
     await notify(deps, run.run.requestedBy, { kind: 'run.failed', title: `Simulation failed — ${run.scenarioName}`, body: message.slice(0, 200), link: `/app/results/${runId}` });
     return 'failed';

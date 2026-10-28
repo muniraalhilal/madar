@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+/* Brand tokens — mirror packages/brand/src/geometry.js COLORS */
+@theme {
+  --color-ink: #0b0e1a; /* Deep Indigo */
+  --color-midnight: #0d1020; /* Deep Midnight */
+  --color-night-2: #14172b;
+  --color-night-3: #1c2038;
+  --color-line-dark: rgb(219 207 255 / 0.12);
+  --color-lavender: #8b7cf6;
+  --color-lavender-soft: #b4a3e6;
+  --color-lavender-mist: #dbcfff;
+  --color-lavender-deep: #5b4bd6;
+  --color-mint: #7cd9c7;
+  --color-mint-deep: #23806f;
+  --color-sand: #f6f4f1;
+  --color-sand-2: #eeeae4;
+  --color-paper: #fbfaf8;
+  --color-slate: #8d93a6;
+  --color-slate-deep: #4a5066;
+  --color-peach: #ffb58e;
+  --color-peach-deep: #b4552a;
+  --color-danger: #ff8a8a;
+
+  --font-display: 'Montserrat', 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Space Grotesk', sans-serif;
+
+  --ease-orbit: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-sand);
+    font-family: var(--font-sans);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-lavender-soft);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: rgb(139 124 246 / 0.45);
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* The brand's tracked geometric capitals ("THE CITY IN MOTION.") */
+  .display-caps {
+    font-family: var(--font-display);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    line-height: 1.02;
+  }
+  .tagline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.42em;
+  }
+  .arabic {
+    font-family: var(--font-arabic);
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-radius: 999px;
+    padding: 0.8rem 1.35rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition:
+      background-color 0.25s var(--ease-orbit),
+      color 0.25s var(--ease-orbit),
+      transform 0.25s var(--ease-orbit),
+      box-shadow 0.25s var(--ease-orbit);
+  }
+  .pill-primary {
+    background: var(--color-lavender);
+    color: #fff;
+    box-shadow: 0 10px 40px -12px rgb(139 124 246 / 0.75);
+  }
+  .pill-primary:hover {
+    background: #9a8cff;
+    transform: translateY(-1px);
+  }
+  .pill-ghost {
+    border: 1px solid rgb(219 207 255 / 0.35);
+    color: var(--color-sand);
+    background: rgb(11 14 26 / 0.25);
+    backdrop-filter: blur(10px);
+  }
+  .pill-ghost:hover {
+    background: rgb(219 207 255 / 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

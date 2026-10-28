@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "workers/*"
   - "packages/*"
+  - "tools/*"
 onlyBuiltDependencies:
   - argon2
   - sharp
