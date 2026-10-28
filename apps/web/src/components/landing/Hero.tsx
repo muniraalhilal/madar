@@ -108,10 +108,12 @@ export function Hero() {
 
         {!reduced && (
           <div className="absolute inset-0 grid place-items-center px-6" style={{ opacity: intro, transform: `scale(${1 - (1 - intro) * 0.08})` }} aria-hidden={intro < 0.05}>
-            <div className="max-md:scale-[0.78]">
+            {/* soft dark halo so the light trails never cut through the letters */}
+            <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 h-[70vmin] w-[120vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(11,14,26,0.78),rgba(11,14,26,0.5)_55%,transparent)] blur-2xl" />
+            <div className="relative max-md:scale-[0.78] [filter:drop-shadow(0_2px_14px_rgba(11,14,26,0.9))]">
               <LogoStacked />
             </div>
-            <p className="absolute bottom-10 text-xs tracking-[0.3em] text-sand/70 uppercase">Scroll to descend</p>
+            <p className="absolute bottom-24 text-xs tracking-[0.3em] text-sand/80 uppercase md:bottom-28">Scroll to descend</p>
           </div>
         )}
 
