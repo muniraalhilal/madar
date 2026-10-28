@@ -23,9 +23,18 @@ MADAR is a smart-city digital twin. You explore a simulated city, change how it 
 | App: Dashboard, City Explorer (3D), Traffic, Energy, Incidents, Scenario Lab, Results, Compare, Reports, Saved, Settings | ✅ Implemented |
 | Playwright end-to-end journey (login → explorer → scenario → run → compare → report → saved) | ✅ Passing on desktop + mobile viewport |
 | Offline renderer (Three.js in headless Chromium) for marketing stills + scroll-scrubbed flight | ✅ Implemented |
-| Deployment to a hosted environment | ⏳ Planned — guidance in [docs/deployment.md](docs/deployment.md) |
+| Public landing page on GitHub Pages (static, engine runs in the visitor's browser) | ✅ Workflow in `.github/workflows/pages.yml` |
+| Hosted deployment of the full app (API, database, worker) | ⏳ Planned — guidance in [docs/deployment.md](docs/deployment.md) |
 
 See [Known limitations](#known-limitations) for what is deliberately simplified.
+
+## Share the landing page (GitHub Pages)
+
+Pushing to `main` builds the landing page as a static site and publishes it with GitHub Pages
+(enable it once: **Settings → Pages → Source: GitHub Actions**). The site lives at
+`https://<user>.github.io/<repo>/`. It has no server, so the *Explore MADAR* / *Sign in* buttons
+open this setup guide — the full application runs locally (below). Build it yourself with
+`NEXT_PUBLIC_BASE_PATH=/madar pnpm --filter @madar/web build:static` (output in `apps/web/out`).
 
 ## Repository layout
 
