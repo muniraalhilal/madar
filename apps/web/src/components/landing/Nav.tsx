@@ -1,4 +1,5 @@
 'use client';
+import { AppLink } from './AppLink';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
@@ -42,12 +43,12 @@ export function Nav() {
           ))}
         </ul>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="hidden text-[0.92rem] text-sand/80 hover:text-white sm:inline">
+          <AppLink to="/login" className="hidden text-[0.92rem] text-sand/80 hover:text-white sm:inline">
             Sign in
-          </Link>
-          <Link href="/app" className="pill pill-primary hidden !py-2.5 sm:inline-flex">
+          </AppLink>
+          <AppLink to="/app" className="pill pill-primary hidden !py-2.5 sm:inline-flex">
             Enter MADAR
-          </Link>
+          </AppLink>
           <Dialog.Root>
             <Dialog.Trigger className="grid h-11 w-11 place-items-center rounded-full border border-line-dark text-sand lg:hidden" aria-label="Open menu">
               <Menu size={20} />
@@ -74,12 +75,12 @@ export function Nav() {
                   ))}
                 </ul>
                 <div className="mt-6 grid grid-cols-2 gap-3">
-                  <Link href="/login" className="pill pill-ghost justify-center">
+                  <AppLink to="/login" className="pill pill-ghost justify-center">
                     Sign in
-                  </Link>
-                  <Link href="/app" className="pill pill-primary justify-center">
+                  </AppLink>
+                  <AppLink to="/app" className="pill pill-primary justify-center">
                     Enter MADAR
-                  </Link>
+                  </AppLink>
                 </div>
               </Dialog.Content>
             </Dialog.Portal>

@@ -14,3 +14,7 @@ tools/render/out
 test-results
 apps/web/.next
 dump.rdb
+
+out/
+
+.static-stash/

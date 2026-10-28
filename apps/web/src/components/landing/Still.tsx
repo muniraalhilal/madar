@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn';
+import { asset } from '@/lib/site';
 
 type Name = 'hero' | 'night' | 'movement' | 'enter';
 
@@ -8,8 +9,8 @@ type Name = 'hero' | 'night' | 'movement' | 'enter';
  * sizes are downscaled from native renders (3840×2160 / 1440×3120).
  */
 export function Still({ name, alt, className, priority = false, imgClassName }: { name: Name; alt: string; className?: string; priority?: boolean; imgClassName?: string }) {
-  const d = (ext: string) => [1280, 1920, 2560, 3840].map((w) => `/media/${name}-desktop-${w}.${ext} ${w}w`).join(', ');
-  const m = (ext: string) => [828, 1080, 1440].map((w) => `/media/${name}-mobile-${w}.${ext} ${w}w`).join(', ');
+  const d = (ext: string) => [1280, 1920, 2560, 3840].map((w) => `${asset('/media')}/${name}-desktop-${w}.${ext} ${w}w`).join(', ');
+  const m = (ext: string) => [828, 1080, 1440].map((w) => `${asset('/media')}/${name}-mobile-${w}.${ext} ${w}w`).join(', ');
   const portrait = '(max-aspect-ratio: 4/5), (max-width: 767px)';
   return (
     <picture className={cn('block', className)}>
@@ -18,7 +19,7 @@ export function Still({ name, alt, className, priority = false, imgClassName }: 
       <source type="image/avif" srcSet={d('avif')} sizes="100vw" />
       <source type="image/webp" srcSet={d('webp')} sizes="100vw" />
       <img
-        src={`/media/${name}-desktop-1920.webp`}
+        src={`${asset('/media')}/${name}-desktop-1920.webp`}
         alt={alt}
         className={cn('h-full w-full object-cover', imgClassName)}
         loading={priority ? 'eager' : 'lazy'}

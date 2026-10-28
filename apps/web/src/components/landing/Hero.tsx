@@ -1,12 +1,13 @@
 'use client';
-import Link from 'next/link';
+import { AppLink } from './AppLink';
 import { useEffect, useRef, useState } from 'react';
 import { LogoStacked } from '@/components/brand/Logo';
 import { trackProgress, useIsPortrait, usePrefersReducedMotion } from '@/lib/motion';
 import { Still } from './Still';
+import { asset } from '@/lib/site';
 
 const FRAMES = 90;
-const frameUrl = (set: string, i: number) => `/media/seq/${set}/${String(i).padStart(3, '0')}.webp`;
+const frameUrl = (set: string, i: number) => `${asset('/media/seq')}/${set}/${String(i).padStart(3, '0')}.webp`;
 
 /**
  * Section 1 — The City in Motion.
@@ -127,9 +128,9 @@ export function Hero() {
             Explore the systems shaping tomorrow&rsquo;s cities.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-6">
-            <Link href="/app" className="pill pill-primary">
+            <AppLink to="/app" className="pill pill-primary">
               Explore MADAR
-            </Link>
+            </AppLink>
             <a href="#connected" className="group inline-flex items-center gap-4 text-sand/90">
               <span className="grid h-14 w-14 place-items-center rounded-full border border-sand/50 transition group-hover:border-white group-hover:bg-white/10">
                 <svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true">

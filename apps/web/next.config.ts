@@ -2,8 +2,13 @@ import type { NextConfig } from 'next';
 
 const api = process.env.API_INTERNAL_URL ?? 'http://localhost:4000';
 
+// STATIC_EXPORT=1 builds only the landing page as static files (GitHub Pages).
+const staticExport = process.env.STATIC_EXPORT === '1';
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || undefined;
+
 const config: NextConfig = {
   reactStrictMode: true,
+  ...(staticExport ? { output: 'export' as const, distDir: 'out', basePath, trailingSlash: true, images: { unoptimized: true } } : {}),
   transpilePackages: ['@madar/brand', '@madar/shared', '@madar/sim-engine'],
   poweredByHeader: false,
   // REST calls are proxied same-origin so auth cookies stay first-party.
@@ -25,4 +30,9 @@ const config: NextConfig = {
     ];
   },
 };
+if (staticExport) {
+  // Static hosting has no server: no proxy, and headers are set by the host.
+  delete config.rewrites;
+  delete config.headers;
+}
 export default config;

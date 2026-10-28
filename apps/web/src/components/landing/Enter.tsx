@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { AppLink } from './AppLink';
 import { LogoStacked } from '@/components/brand/Logo';
 import { Still } from './Still';
 
@@ -16,12 +16,12 @@ export function Enter() {
           <LogoStacked scale={0.82} />
           <p className="mt-8 max-w-[40ch] text-lg leading-relaxed text-sand/85">Sign in, pick a junction, change its signals and run the morning again. The city will show you what happens.</p>
           <div className="mt-9 flex flex-wrap justify-center gap-4">
-            <Link href="/app" className="pill pill-primary">
+            <AppLink to="/app" className="pill pill-primary">
               Enter MADAR
-            </Link>
-            <Link href="/register" className="pill pill-ghost">
+            </AppLink>
+            <AppLink to="/register" className="pill pill-ghost">
               Create an account
-            </Link>
+            </AppLink>
           </div>
         </div>
       </div>

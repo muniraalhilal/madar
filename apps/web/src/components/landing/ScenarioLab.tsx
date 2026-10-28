@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import { AppLink } from './AppLink';
 import { useCallback, useRef, useState } from 'react';
 import data from '@/data/landing.json';
 import { CityMap } from './CityMap';
@@ -98,9 +98,9 @@ export function ScenarioLab() {
           </table>
         </div>
         <div className="mt-10 flex flex-wrap items-center gap-5">
-          <Link href="/app/scenarios" className="pill pill-primary">
+          <AppLink to="/app/scenarios" className="pill pill-primary">
             Open the Scenario Lab
-          </Link>
+          </AppLink>
           <p className="text-sm text-sand/55">Engine v{data.engineVersion} · seed {data.seed} · fingerprints {data.baseline.fingerprint.slice(0, 8)} / {data.optimised.fingerprint.slice(0, 8)}</p>
         </div>
       </div>
