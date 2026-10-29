@@ -23,18 +23,33 @@ MADAR is a smart-city digital twin. You explore a simulated city, change how it 
 | App: Dashboard, City Explorer (3D), Traffic, Energy, Incidents, Scenario Lab, Results, Compare, Reports, Saved, Settings | ✅ Implemented |
 | Playwright end-to-end journey (login → explorer → scenario → run → compare → report → saved) | ✅ Passing on desktop + mobile viewport |
 | Offline renderer (Three.js in headless Chromium) for marketing stills + scroll-scrubbed flight | ✅ Implemented |
-| Public landing page on GitHub Pages (static, engine runs in the visitor's browser) | ✅ Workflow in `.github/workflows/pages.yml` |
+| Public demo on GitHub Pages: landing page + the whole app in demo mode (engine in a Web Worker, data in the visitor's browser) | ✅ Workflow in `.github/workflows/pages.yml`, Playwright demo suite |
 | Hosted deployment of the full app (API, database, worker) | ⏳ Planned — guidance in [docs/deployment.md](docs/deployment.md) |
 
 See [Known limitations](#known-limitations) for what is deliberately simplified.
 
-## Share the landing page (GitHub Pages)
+## Live demo (GitHub Pages)
 
-Pushing to `main` builds the landing page as a static site and publishes it with GitHub Pages
-(enable it once: **Settings → Pages → Source: GitHub Actions**). The site lives at
-`https://<user>.github.io/<repo>/`. It has no server, so the *Explore MADAR* / *Sign in* buttons
-open this setup guide — the full application runs locally (below). Build it yourself with
-`NEXT_PUBLIC_BASE_PATH=/madar pnpm --filter @madar/web build:static` (output in `apps/web/out`).
+Pushing to `main` publishes a static build with GitHub Pages (enable once: **Settings → Pages → Source: GitHub Actions**), at `https://<user>.github.io/<repo>/`.
+
+- The **landing page** is identical to the full build.
+- Every app entry point (*Sign in*, *Enter MADAR*, *Explore MADAR*, *Open the Scenario Lab*, *Create an account*) first shows a **demo notice**: synthetic data, no registration, no accounts.
+- The **application runs in demo mode**. The same pages call the same API routes, answered in the browser by `apps/web/src/demo/backend.ts`:
+  - runs execute the real `TrafficSimulation` in a Web Worker;
+  - input is validated with the shared Zod schemas and the engine's own validator;
+  - comparisons, Webster proposals, energy and reports use the same engine and shared functions as the server.
+- On a first visit the sample study (baseline, Webster re-timing, Orbit Boulevard closure) is **computed in the browser in a few seconds**. Its numbers match the landing page exactly (same engine, same seed; covered by a unit test).
+- The visitor's scenarios, runs and reports are kept in **localStorage + IndexedDB** (memory only when storage is blocked). *Reset demo* clears them.
+
+Build and test it locally:
+
+```bash
+NEXT_PUBLIC_BASE_PATH=/madar pnpm --filter @madar/web build:static   # → apps/web/out
+# serve apps/web/out so that it is reachable at http://localhost:8090/madar/, then:
+pnpm exec playwright test -c tests/e2e/demo.config.ts
+```
+
+Force demo mode in local development with `NEXT_PUBLIC_DEMO=1 pnpm --filter @madar/web dev`.
 
 ## Repository layout
 
@@ -129,6 +144,7 @@ Create the test database once: `createdb -O madar madar_test` (PostGIS is create
 - One city (Madar) ships; the schema supports more.
 - Pausing holds the worker's job slot; with `WORKER_CONCURRENCY=2` two paused runs block new work until resumed or cancelled.
 - The landing imagery is a real-time-engine render (Three.js), not a path-traced film render. The pipeline accepts licensed photography as a drop-in replacement for any still (`apps/web/public/media`).
+- The GitHub Pages demo has no server. Accounts, roles, project sharing and the PostGIS spatial queries exist only in the full stack. Demo data lives in one browser, a run stops if its tab is closed, and playback frames are kept for the 8 most recent runs.
 - Socket.IO runs on a single API instance; scaling out needs the Redis adapter (`@socket.io/redis-adapter`) — the pub/sub wiring already goes through Redis.
 
 ## Future improvements

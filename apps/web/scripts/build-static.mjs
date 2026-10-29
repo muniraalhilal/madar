@@ -1,10 +1,11 @@
-// Builds the landing page as a static site (GitHub Pages) into apps/web/out.
-// The application routes need the API server, so they are set aside for the
-// duration of the build and restored afterwards.
+// Builds the static site (GitHub Pages) into apps/web/out: the landing page and
+// the application in demo mode, where the engine runs in the visitor's browser.
+// Routes that need the API server are set aside for the build and restored.
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
 
-const aside = ['src/app/app', 'src/app/(auth)', 'src/middleware.ts'];
+// Sign-in pages and the session cookie gate need the API; the demo has no accounts.
+const aside = ['src/app/(auth)', 'src/middleware.ts'];
 const stash = '.static-stash';
 rmSync(stash, { recursive: true, force: true });
 mkdirSync(stash);

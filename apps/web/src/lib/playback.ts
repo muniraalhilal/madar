@@ -1,6 +1,8 @@
 'use client';
 import { decodeFrames, type Frame } from '@madar/sim-engine';
 import { useEffect, useState } from 'react';
+import { demoPlayback } from '@/demo/backend';
+import { DEMO } from '@/demo/mode';
 
 /** Downloads a run's binary playback (gzip-encoded on the wire) and decodes it. */
 export function usePlayback(runId: string | null) {
@@ -11,6 +13,14 @@ export function usePlayback(runId: string | null) {
     setError(null);
     if (!runId) return;
     let cancelled = false;
+    if (DEMO) {
+      demoPlayback(runId)
+        .then((f) => !cancelled && setFrames(f))
+        .catch((e: Error) => !cancelled && setError(e.message));
+      return () => {
+        cancelled = true;
+      };
+    }
     fetch(`/api/runs/${runId}/playback`, { credentials: 'include' })
       .then(async (r) => {
         if (!r.ok) throw new Error(r.status === 404 ? 'No playback recorded for this run' : `Playback failed (${r.status})`);

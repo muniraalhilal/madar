@@ -5,6 +5,9 @@ import { Empty, fmt, PageHeader, Panel, StatusBadge } from '@/components/app/ui'
 import type { ScenarioListItem } from '@/lib/api';
 import { useApi } from '@/lib/useApi';
 import type { ReportRow } from '../reports/page';
+import { href } from '@/lib/routes';
+import { DemoStorage } from '@/components/demo/DemoStorage';
+import { DEMO } from '@/demo/mode';
 
 export default function Saved() {
   const { project } = useSession();
@@ -12,15 +15,16 @@ export default function Saved() {
   const rep = useApi<ReportRow[]>(project ? `/projects/${project.id}/reports` : null);
   return (
     <>
-      <PageHeader title="Saved" description="Scenarios you saved to the library, and the reports built from them." />
+      <PageHeader title="Saved" description={DEMO ? 'Scenarios saved to the library and the reports built from them. The three sample scenarios are saved for you; reopen any of them to edit and run it again.' : 'Scenarios you saved to the library, and the reports built from them.'} />
+      {DEMO && <div className="mb-6"><DemoStorage /></div>}
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Saved scenarios">
           {sc.data?.length === 0 && <Empty title="Nothing saved yet">Use “Save to library” in the Scenario Lab.</Empty>}
           <ul className="space-y-1">
             {sc.data?.map((s) => (
               <li key={s.id}>
-                <Link href={`/app/scenarios/${s.id}`} className="flex items-center justify-between gap-3 rounded-xl px-3 py-3 hover:bg-white/5">
-                  <span><span className="block text-white">{s.name}</span><span className="text-xs text-sand/55">{s.kind} · updated {fmt.ago(s.updatedAt)}</span></span>
+                <Link href={href.scenario(s.id)} className="flex items-center justify-between gap-3 rounded-xl px-3 py-3 hover:bg-white/5">
+                  <span><span className="block text-white">{s.name}</span><span className="text-xs text-sand/55">{s.sample ? 'Sample · ' : ''}{s.kind} · updated {fmt.ago(s.updatedAt)}</span></span>
                   {s.latestRun && <StatusBadge status={s.latestRun.status} />}
                 </Link>
               </li>
@@ -31,7 +35,7 @@ export default function Saved() {
           {rep.data?.length === 0 && <Empty title="No reports yet" />}
           <ul className="space-y-1">
             {rep.data?.map((r) => (
-              <li key={r.id}><Link href={`/app/reports/${r.id}`} className="block rounded-xl px-3 py-3 hover:bg-white/5"><span className="block text-white">{r.title}</span><span className="text-xs text-sand/55">{fmt.ago(r.createdAt)}</span></Link></li>
+              <li key={r.id}><Link href={href.report(r.id)} className="block rounded-xl px-3 py-3 hover:bg-white/5"><span className="block text-white">{r.title}</span><span className="text-xs text-sand/55">{fmt.ago(r.createdAt)}</span></Link></li>
             ))}
           </ul>
         </Panel>

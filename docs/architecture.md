@@ -64,3 +64,33 @@ Persisted metrics are separate from frames: the worker stores a minute-by-minute
 - Authorisation: global role permissions (`admin`, `planner`, `viewer`) from `@madar/shared/permissions.ts` (also seeded into the `roles` table) **and** per-project membership (`owner`, `editor`, `viewer`) checked in one place, `ProjectAccessService`. Inaccessible resources return 404, not 403, so IDs are not confirmed.
 - WebSockets: the handshake verifies the same access token and session; joining `run:<id>` repeats the project access check.
 - Rate limiting (`@nestjs/throttler`), Helmet headers, CORS allow-list, validated environment (the process refuses to start with weak or missing secrets), safe error filter (no stack traces or SQL leak to clients), structured logs with cookies/authorization redacted, audit log for every mutation.
+
+
+## Demo mode (static hosting)
+
+The GitHub Pages build (`pnpm --filter @madar/web build:static`) ships the landing page and the application without a server.
+
+**How the pages talk to the demo**
+
+- `lib/api.ts` checks `DEMO` (from `demo/mode.ts`) and routes each request to `demo/backend.ts` instead of `fetch`.
+- The backend implements the API routes the pages call, with the same response shapes.
+- The live socket is replaced by `demo/socket.ts`, which emits the same `WsEvents` from the simulation worker.
+
+**Where the computation happens**
+
+- `demo/engine.worker.ts` runs `demo/simulate.ts`, a browser copy of the server worker's loop: chunked advance, pause/resume/cancel, pacing, throttled live frames, encoded playback.
+- Validation reuses the shared Zod schemas and `validateScenario`.
+- Comparison uses `compareSummaries`/`compareLinks`, proposals `proposeSignalTimings`, energy `simulateCityEnergy`, and reports `findingsFrom`/`renderReportHtml`. These now live in `@madar/shared` and are used by the API too.
+
+**Storage**
+
+- The small state (projects, scenarios, run summaries, reports, notifications, activity) lives in `localStorage`.
+- Bulky run outputs (samples, per-road and per-junction results, events, playback frames) live in IndexedDB.
+- If either store is unavailable, data stays in memory and the UI says so.
+- Runs interrupted by closing the tab are marked as interrupted on the next load.
+
+**Routing**
+
+- A static host can only serve prebuilt pages, so record pages are prebuilt once as `…/view/` and read the id from `?id=`. The helpers are in `lib/routes.ts`.
+- With a server, ids stay in the path.
+- `(auth)` and the middleware are left out of the static build.

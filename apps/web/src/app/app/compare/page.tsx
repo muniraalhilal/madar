@@ -9,6 +9,7 @@ import { SERIES, btn, ErrorNote, fmt, PageHeader, Panel, Skeleton } from '@/comp
 import { CityMap } from '@/components/landing/CityMap';
 import { api, type Run } from '@/lib/api';
 import { useApi } from '@/lib/useApi';
+import { href } from '@/lib/routes';
 
 interface Comparison {
   baseline: Run;
@@ -21,7 +22,7 @@ interface Comparison {
   series: { baseline: { t: number; vehicles: number; queued: number; travel: number | null }[]; variant: { t: number; vehicles: number; queued: number; travel: number | null }[] };
 }
 
-const val = (m: MetricDelta, v: number) => (m.unit === 's' ? fmt.s(v) : m.unit === 'm/s' ? fmt.kmh(v) : m.unit === 'kg' ? `${(v / 1000).toFixed(2)} t` : `${v >= 100 ? fmt.n(v) : v.toFixed(2)} ${m.unit}`);
+const val = (m: MetricDelta, v: number) => (m.unit === 's' ? fmt.s(v) : m.unit === 'm/s' ? fmt.kmh(v) : m.unit === 'kg' ? `${(v / 1000).toFixed(2)} t` : `${v >= 100 || Number.isInteger(v) ? fmt.n(v) : v.toFixed(2)} ${m.unit}`);
 
 function CompareInner() {
   const q = useSearchParams();
@@ -33,7 +34,7 @@ function CompareInner() {
   const bl = useApi<{ linkId: string; congestion: number }[]>(b ? `/runs/${b}/links` : null);
   const vl = useApi<{ linkId: string; congestion: number }[]>(v ? `/runs/${v}/links` : null);
   const [busy, setBusy] = useState(false);
-  if (!b || !v) return <ErrorNote>Choose two runs to compare from a results page.</ErrorNote>;
+  if (!b || !v) return <Picker />;
   if (cmp.error) return <ErrorNote>{cmp.error}</ErrorNote>;
   if (!cmp.data) return <Skeleton className="h-96" />;
   const c = cmp.data;
@@ -52,7 +53,7 @@ function CompareInner() {
               onClick={async () => {
                 setBusy(true);
                 const r = await api<{ id: string }>(`/projects/${c.baseline.projectId}/reports`, { method: 'POST', json: { title: `${c.variant.scenarioName} vs ${c.baseline.scenarioName}`, baselineRunId: b, variantRunId: v } });
-                router.push(`/app/reports/${r.id}`);
+                router.push(href.report(r.id));
               }}
             >
               <FileText size={16} /> Save as report
@@ -70,6 +71,7 @@ function CompareInner() {
                   <th className="px-5 py-3 text-right font-normal"><span className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: SERIES.baseline }} />Baseline</th>
                   <th className="px-5 py-3 text-right font-normal"><span className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: SERIES.variant }} />Variant</th>
                   <th className="px-5 py-3 text-right font-normal">Change</th>
+                  <th className="px-5 py-3 text-right font-normal">Better when</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,13 +81,18 @@ function CompareInner() {
                     <td className="px-5 py-3 text-right tabular-nums text-sand/75">{val(m, m.baseline)}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{val(m, m.variant)}</td>
                     <td className={`px-5 py-3 text-right tabular-nums ${m.verdict === 'improved' ? 'text-mint' : m.verdict === 'worse' ? 'text-peach' : 'text-sand/55'}`}>
-                      {m.percent == null ? '—' : fmt.pct(m.percent)} <span className="sr-only">{m.verdict}</span>
+                      {m.percent == null ? '—' : fmt.pct(m.percent)} <span className="text-xs">{m.verdict === 'unchanged' ? '' : m.verdict === 'improved' ? '· better' : '· worse'}</span>
                     </td>
+                    <td className="px-5 py-3 text-right text-xs text-sand/55">{m.better === 'lower' ? '↓ lower' : '↑ higher'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <p className="border-t border-line-dark px-5 py-3 text-xs text-sand/55">
+            Change is the variant relative to the baseline. Green means the change is an improvement for that metric, peach means it is worse; changes under 1 % count as unchanged.
+            Rows marked <em>estimate</em> are model estimates derived from simulated speeds and stops, not direct simulation outputs. Same city, engine version and seed unless the scenario changed them.
+          </p>
         </Panel>
         <div className="grid gap-6 xl:grid-cols-2">
           <Panel title="Vehicles on the network">
@@ -128,6 +135,45 @@ function CompareInner() {
           </Panel>
         </div>
       </div>
+    </>
+  );
+}
+
+/** Choose any two completed runs of the current project. */
+function Picker() {
+  const { project } = useSession();
+  const router = useRouter();
+  const runs = useApi<Run[]>(project ? `/projects/${project.id}/runs` : null);
+  const done = (runs.data ?? []).filter((r) => r.status === 'completed');
+  const [b, setB] = useState('');
+  const [v, setV] = useState('');
+  const baseDefault = done.find((r) => r.scenarioKind === 'baseline')?.id ?? done[0]?.id ?? '';
+  const varDefault = done.find((r) => r.id !== (b || baseDefault))?.id ?? '';
+  const bb = b || baseDefault;
+  const vv = v || varDefault;
+  const label = (r: Run) => `${r.scenarioName} · ${fmt.s(r.summary?.meanTravelTime)} avg · ${fmt.ago(r.finishedAt ?? r.queuedAt)}`;
+  return (
+    <>
+      <PageHeader eyebrow="Results & comparison" title="Compare two runs" description="Pick a baseline and a variant. The comparison shows every metric with its unit, whether lower or higher is better, maps of congestion and the roads and junctions that changed most." />
+      {runs.loading && <Skeleton className="h-40" />}
+      {runs.error && <ErrorNote>{runs.error}</ErrorNote>}
+      {runs.data && done.length < 2 && <ErrorNote>At least two completed runs are needed. Run a variant in the Scenario Lab first.</ErrorNote>}
+      {done.length >= 2 && (
+        <Panel>
+          <form className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end" onSubmit={(e) => { e.preventDefault(); if (bb && vv && bb !== vv) router.push(`/app/compare?baseline=${bb}&variant=${vv}`); }}>
+            <label className="text-sm text-sand/70">
+              <span className="mb-1.5 flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: SERIES.baseline }} /> Baseline</span>
+              <select value={bb} onChange={(e) => setB(e.target.value)} className="w-full rounded-xl border border-line-dark bg-night-2 px-3 py-2.5 text-sand">{done.map((r) => <option key={r.id} value={r.id}>{label(r)}</option>)}</select>
+            </label>
+            <label className="text-sm text-sand/70">
+              <span className="mb-1.5 flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: SERIES.variant }} /> Variant</span>
+              <select value={vv} onChange={(e) => setV(e.target.value)} className="w-full rounded-xl border border-line-dark bg-night-2 px-3 py-2.5 text-sand">{done.map((r) => <option key={r.id} value={r.id}>{label(r)}</option>)}</select>
+            </label>
+            <button className={btn.primary} disabled={!bb || !vv || bb === vv}>Compare</button>
+          </form>
+          {bb === vv && <p className="mt-3 text-xs text-peach">Choose two different runs.</p>}
+        </Panel>
+      )}
     </>
   );
 }

@@ -6,10 +6,8 @@ import { AuditService } from '../audit/audit.service';
 import type { AuthUser } from '../common/auth.decorators';
 import { DB } from '../database/database.module';
 import { RunsService, summaryFromRow } from '../runs/runs.service';
-import { findingsFrom, type ReportContent } from './report-render';
+import { REPORT_DISCLAIMER as DISCLAIMER, findingsFrom, type ReportContent } from '@madar/shared';
 
-const DISCLAIMER =
-  'MADAR simulates a fictional city with a simplified mesoscopic traffic model. Results are useful for comparing scenarios under the same assumptions; they are not calibrated predictions for any real network. Energy and emissions figures are model estimates.';
 
 @Injectable()
 export class ReportsService {

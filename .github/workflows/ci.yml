@@ -25,7 +25,7 @@ jobs:
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
-      - run: pnpm -r --filter ./packages/** --filter @madar/api --filter @madar/worker run typecheck
+      - run: pnpm -r --filter './packages/*' --filter @madar/api --filter @madar/worker run typecheck
       - run: pnpm --filter @madar/web typecheck
       - run: pnpm lint
       - run: pnpm test

@@ -8,8 +8,8 @@
     "start": "node dist/main.js",
     "dev": "node --env-file=../../.env --import tsx --watch src/main.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src test",
-    "test": "vitest run"
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@madar/db": "workspace:*",

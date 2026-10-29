@@ -1,4 +1,24 @@
-import type { MetricDelta } from '@madar/sim-engine';
+/**
+ * Report content and rendering shared by the API and the browser demo.
+ * Pure functions: the narrative is generated from computed deltas only.
+ */
+
+/** Structural copy of the engine's ReportMetric, so this package stays dependency-free. */
+export interface ReportMetric {
+  key: string;
+  label: string;
+  unit: string;
+  baseline: number;
+  variant: number;
+  delta: number;
+  percent: number | null;
+  better: 'lower' | 'higher';
+  verdict: 'improved' | 'worse' | 'unchanged';
+  kind: 'simulated' | 'estimate';
+}
+
+export const REPORT_DISCLAIMER =
+  'MADAR simulates a fictional city with a simplified mesoscopic traffic model. Results are useful for comparing scenarios under the same assumptions; they are not calibrated predictions for any real network. Energy and emissions figures are model estimates.';
 
 export interface ReportContent {
   generatedAt: string;
@@ -6,7 +26,7 @@ export interface ReportContent {
   notes: string;
   baseline: { runId: string; scenarioName: string; seed: number; engineVersion: string; resultFingerprint: string | null; params: unknown };
   variant: { runId: string; scenarioName: string; seed: number; engineVersion: string; resultFingerprint: string | null; params: unknown } | null;
-  metrics: MetricDelta[];
+  metrics: ReportMetric[];
   topLinks: { name: string; linkId: string; baselineCongestion: number; variantCongestion: number }[];
   findings: string[];
   assumptions: Record<string, unknown>;
@@ -21,7 +41,7 @@ const fmt = (v: number, unit: string) => {
 };
 
 /** Deterministic narrative generated from computed deltas — no invented statistics. */
-export function findingsFrom(metrics: MetricDelta[], hasVariant: boolean): string[] {
+export function findingsFrom(metrics: ReportMetric[], hasVariant: boolean): string[] {
   if (!hasVariant) {
     return metrics
       .filter((m) => ['meanTravelTime', 'meanDelay', 'throughputPerHour', 'maxQueue'].includes(m.key))

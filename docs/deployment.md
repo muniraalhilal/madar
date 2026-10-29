@@ -1,6 +1,15 @@
 # Deployment
 
-Nothing is deployed yet. This is the recommended path and what it costs to confirm before starting.
+## Public demo — GitHub Pages (free, deployed)
+
+`.github/workflows/pages.yml` builds the static site on every push to `main` and deploys it with GitHub Pages. The site contains the landing page and the application in **demo mode**, where the engine runs in the visitor's browser (see [architecture → Demo mode](architecture.md#demo-mode-static-hosting)).
+
+- It needs no secrets, server, database or paid service.
+- The base path comes from `actions/configure-pages`, so the site works under `/<repo>/`.
+
+## Full stack (not deployed)
+
+The full stack (accounts, PostGIS, server-side queue) is not deployed. This is the recommended path and what it costs; confirm the costs before starting.
 
 | Piece | Option | Notes |
 |---|---|---|

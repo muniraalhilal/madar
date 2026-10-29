@@ -38,6 +38,7 @@ export default function ExplorerPage() {
   }, [frames, playing]);
   const frame: Frame | null = frames?.[fi] ?? null;
   const [sel, setSel] = useState<Selection>(null);
+  const [layers, setLayers] = useState({ congestion: true, vehicles: true });
   const [focus, setFocus] = useState<THREE.Vector3 | null>(null);
   const selectedRun = completed.find((r) => r.id === runId);
   const startHour = (selectedRun?.params as { startHour?: number } | undefined)?.startHour ?? 7;
@@ -46,7 +47,7 @@ export default function ExplorerPage() {
     <div className="-mx-4 -my-6 h-[calc(100svh-4rem)] md:-mx-8 md:-my-8">
       <div className="relative h-full">
         {error && <div className="p-6"><ErrorNote>Could not load the city: {error}</ErrorNote></div>}
-        {city && <CityScene city={city} congestion={congestion} frame={frame} selected={sel} onSelect={(s) => { setSel(s); if (s && city) { const p = locate(city, s); if (p) setFocus(p); } }} focus={focus} />}
+        {city && <CityScene city={city} congestion={layers.congestion ? congestion : undefined} frame={layers.vehicles ? frame : null} selected={sel} onSelect={(s) => { setSel(s); if (s && city) { const p = locate(city, s); if (p) setFocus(p); } }} focus={focus} />}
 
         <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-wrap items-start justify-between gap-3 md:inset-x-5 md:top-5">
           <div className="pointer-events-auto rounded-2xl border border-line-dark bg-ink/80 p-3 backdrop-blur-xl">
@@ -65,6 +66,11 @@ export default function ExplorerPage() {
               <span className="h-1.5 w-24 rounded-full bg-[linear-gradient(90deg,#7CD9C7,#B4A3E6,#8B7CF6,#FFB58E,#FF7878)]" />
               <span>Congested</span>
             </div>
+            <fieldset className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-line-dark pt-2 text-xs text-sand/75">
+              <legend className="sr-only">Layers</legend>
+              <label className="flex items-center gap-1.5"><input type="checkbox" className="accent-[#8B7CF6]" checked={layers.congestion} onChange={(e) => setLayers({ ...layers, congestion: e.target.checked })} /> Road congestion</label>
+              <label className="flex items-center gap-1.5"><input type="checkbox" className="accent-[#8B7CF6]" checked={layers.vehicles} onChange={(e) => setLayers({ ...layers, vehicles: e.target.checked })} /> Vehicles</label>
+            </fieldset>
           </div>
           <p className="pointer-events-auto hidden rounded-full border border-line-dark bg-ink/70 px-3 py-1.5 text-xs text-sand/60 backdrop-blur md:block">Drag to pan · right-drag to orbit · scroll to zoom · click a road, junction or building</p>
         </div>

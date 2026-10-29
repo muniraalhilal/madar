@@ -1,4 +1,4 @@
-import { createReportSchema } from '@madar/shared';
+import { createReportSchema, renderReportHtml, type ReportContent } from '@madar/shared';
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
@@ -6,7 +6,6 @@ import type { z } from 'zod';
 import { CurrentUser, RequirePermission, type AuthUser } from '../common/auth.decorators';
 import { ApiZodBody, ZodPipe } from '../common/zod';
 import { ProjectAccessService } from '../projects/project-access.service';
-import { renderReportHtml, type ReportContent } from './report-render';
 import { ReportsService } from './reports.service';
 
 @ApiTags('reports')

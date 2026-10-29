@@ -1,18 +1,37 @@
+'use client';
 import Link from 'next/link';
-import { appHref, STATIC_SITE } from '@/lib/site';
+import { useState } from 'react';
+import { DemoWelcome } from '@/components/demo/DemoWelcome';
+import { DEMO } from '@/demo/mode';
 
-/** A link into the application; on the static demo site it opens the setup guide. */
+/**
+ * A link into the application. In the demo build every entry point first shows
+ * the demo notice, then continues to `to` ("Sign in" and "Create an account"
+ * lead to the dashboard: there are no accounts). Appearance is unchanged.
+ */
 export function AppLink({ to, className, children }: { to: string; className?: string; children: React.ReactNode }) {
-  const { href, external } = appHref(to);
-  if (external)
+  const [open, setOpen] = useState(false);
+  if (!DEMO)
     return (
-      <a href={href} className={className} target="_blank" rel="noopener noreferrer" title={STATIC_SITE ? 'The full app runs locally — opens the setup guide' : undefined}>
+      <Link href={to} className={className}>
         {children}
-      </a>
+      </Link>
     );
+  const destination = to === '/login' || to === '/register' ? '/app' : to;
   return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
+    <>
+      <Link
+        href={destination}
+        className={className}
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // new tab: the app shows the notice itself
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
+        {children}
+      </Link>
+      {open && <DemoWelcome open={open} onOpenChange={setOpen} destination={destination} />}
+    </>
   );
 }

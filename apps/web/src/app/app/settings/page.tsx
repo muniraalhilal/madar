@@ -1,13 +1,15 @@
 'use client';
 import { changePasswordSchema } from '@madar/shared';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useSession } from '@/components/app/session';
-import { btn, ErrorNote, fmt, PageHeader, Panel } from '@/components/app/ui';
+import { btn, Empty, ErrorNote, fmt, PageHeader, Panel } from '@/components/app/ui';
+import { DEMO } from '@/demo/mode';
 import { Field } from '@/components/ui/Field';
 import { api, type User } from '@/lib/api';
 import { useApi } from '@/lib/useApi';
 
-export default function Settings() {
+function Settings() {
   const { user } = useSession();
   const [name, setName] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -76,4 +78,18 @@ export default function Settings() {
       </div>
     </>
   );
+}
+
+/** Accounts exist only with the API server; the demo has none to manage. */
+export default function SettingsPage() {
+  if (DEMO)
+    return (
+      <>
+        <PageHeader title="Settings" />
+        <Empty title="There are no accounts in the demo" action={<Link href="/app/help" className="pill pill-primary">About the demo</Link>}>
+          Profiles, passwords, sessions and roles belong to the full MADAR application, which runs with its API server. In this demo you are an anonymous visitor and everything you do is kept in this browser.
+        </Empty>
+      </>
+    );
+  return <Settings />;
 }

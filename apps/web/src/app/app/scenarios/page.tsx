@@ -7,6 +7,7 @@ import { useSession } from '@/components/app/session';
 import { btn, Empty, ErrorNote, fmt, PageHeader, Skeleton, StatusBadge } from '@/components/app/ui';
 import { api, type Scenario, type ScenarioListItem } from '@/lib/api';
 import { useApi } from '@/lib/useApi';
+import { href } from '@/lib/routes';
 
 function ScenariosInner() {
   const { project, canWrite } = useSession();
@@ -23,7 +24,7 @@ function ScenariosInner() {
     if (!project) return;
     try {
       const sc = await api<Scenario>(`/projects/${project.id}/scenarios`, { method: 'POST', json: { name: name || 'Untitled scenario', baseScenarioId: base || baseline?.id } });
-      router.push(`/app/scenarios/${sc.id}${signal ? `?signal=${signal}` : ''}`);
+      router.push(href.scenario(sc.id, signal ? `signal=${signal}` : ''));
     } catch (e2) {
       setErr((e2 as Error).message);
     }
@@ -54,10 +55,10 @@ function ScenariosInner() {
       {list.loading && <div className="space-y-3"><Skeleton className="h-20" /><Skeleton className="h-20" /></div>}
       {list.error && <ErrorNote>{list.error}</ErrorNote>}
       {list.data && list.data.length === 0 && <Empty title="No scenarios yet">Create your first one above.</Empty>}
-      <ul className="grid gap-3 lg:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {list.data?.map((s) => (
           <li key={s.id}>
-            <Link href={`/app/scenarios/${s.id}${signal ? `?signal=${signal}` : ''}`} className="block h-full rounded-2xl border border-line-dark bg-midnight/70 p-5 transition hover:border-lavender/40">
+            <Link href={href.scenario(s.id, signal ? `signal=${signal}` : '')} className="block h-full rounded-2xl border border-line-dark bg-midnight/70 p-5 transition hover:border-lavender/40">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 text-xs text-sand/55">

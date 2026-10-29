@@ -7,6 +7,7 @@ import { btn, Empty, ErrorNote, PageHeader, Panel } from '@/components/app/ui';
 import { api, type Scenario, type ScenarioListItem } from '@/lib/api';
 import { useCityMap } from '@/lib/city';
 import { useApi } from '@/lib/useApi';
+import { href } from '@/lib/routes';
 
 interface Inc { id: string; scenarioId: string; scenarioName: string; roadCode: string; roadName: string; kind: string; severity: number; startS: number; durationS: number }
 interface Clo { id: string; scenarioId: string; scenarioName: string; roadCode: string; roadName: string; startS: number; endS: number | null; reason: string }
@@ -30,7 +31,7 @@ export default function Incidents() {
       const road = city?.links.find((l) => l.id === f.road);
       const sc = await api<Scenario>(`/projects/${project.id}/scenarios`, { method: 'POST', json: { name: `${f.kind[0]!.toUpperCase()}${f.kind.slice(1)} on ${road?.name ?? f.road}`, baseScenarioId: base.id } });
       await api(`/scenarios/${sc.id}`, { method: 'PATCH', json: { incidents: [{ roadCode: f.road, kind: f.kind, severity: f.severity, startS: f.start * 60, durationS: f.duration * 60, description: 'Staged from Incident Center' }] } });
-      router.push(`/app/scenarios/${sc.id}`);
+      router.push(href.scenario(sc.id));
     } catch (e2) {
       setErr((e2 as Error).message);
     }
@@ -46,14 +47,14 @@ export default function Incidents() {
             {data.data?.incidents.length === 0 ? <div className="p-5"><Empty title="No incidents planned" /></div> : (
               <table className="w-full text-sm">
                 <thead className="text-xs text-sand/55"><tr><th className="px-4 py-2 text-left font-normal">Road</th><th className="px-4 py-2 text-left font-normal">Kind</th><th className="px-4 py-2 text-right font-normal">Capacity lost</th><th className="px-4 py-2 text-right font-normal">When</th><th className="px-4 py-2 text-left font-normal">Scenario</th></tr></thead>
-                <tbody>{data.data?.incidents.map((i) => <tr key={i.id} className="border-t border-line-dark"><td className="px-4 py-2.5">{i.roadName}</td><td className="px-4 py-2.5 capitalize">{i.kind}</td><td className="px-4 py-2.5 text-right tabular-nums">{Math.round(i.severity * 100)} %</td><td className="px-4 py-2.5 text-right tabular-nums">+{mins(i.startS)} for {mins(i.durationS)}</td><td className="px-4 py-2.5"><Link className="text-lavender-soft hover:underline" href={`/app/scenarios/${i.scenarioId}`}>{i.scenarioName}</Link></td></tr>)}</tbody>
+                <tbody>{data.data?.incidents.map((i) => <tr key={i.id} className="border-t border-line-dark"><td className="px-4 py-2.5">{i.roadName}</td><td className="px-4 py-2.5 capitalize">{i.kind}</td><td className="px-4 py-2.5 text-right tabular-nums">{Math.round(i.severity * 100)} %</td><td className="px-4 py-2.5 text-right tabular-nums">+{mins(i.startS)} for {mins(i.durationS)}</td><td className="px-4 py-2.5"><Link className="text-lavender-soft hover:underline" href={href.scenario(i.scenarioId)}>{i.scenarioName}</Link></td></tr>)}</tbody>
               </table>
             )}
           </Panel>
           <Panel title={`Closures (${data.data?.closures.length ?? 0})`} padded={false}>
             {data.data?.closures.length === 0 ? <div className="p-5"><Empty title="No closures planned" /></div> : (
               <table className="w-full text-sm">
-                <tbody>{data.data?.closures.map((c) => <tr key={c.id} className="border-t border-line-dark first:border-0"><td className="px-4 py-2.5">{c.roadName} <span className="text-xs text-sand/45">{c.roadCode}</span></td><td className="px-4 py-2.5 tabular-nums">from +{mins(c.startS)}{c.endS != null ? ` to +${mins(c.endS)}` : ''}</td><td className="px-4 py-2.5 text-sand/60">{c.reason}</td><td className="px-4 py-2.5"><Link className="text-lavender-soft hover:underline" href={`/app/scenarios/${c.scenarioId}`}>{c.scenarioName}</Link></td></tr>)}</tbody>
+                <tbody>{data.data?.closures.map((c) => <tr key={c.id} className="border-t border-line-dark first:border-0"><td className="px-4 py-2.5">{c.roadName} <span className="text-xs text-sand/45">{c.roadCode}</span></td><td className="px-4 py-2.5 tabular-nums">from +{mins(c.startS)}{c.endS != null ? ` to +${mins(c.endS)}` : ''}</td><td className="px-4 py-2.5 text-sand/60">{c.reason}</td><td className="px-4 py-2.5"><Link className="text-lavender-soft hover:underline" href={href.scenario(c.scenarioId)}>{c.scenarioName}</Link></td></tr>)}</tbody>
               </table>
             )}
           </Panel>

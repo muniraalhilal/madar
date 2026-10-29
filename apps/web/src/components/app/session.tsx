@@ -2,6 +2,8 @@
 import { WS_NAMESPACE } from '@madar/shared';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
+import { demoSocket } from '@/demo/socket';
+import { DEMO } from '@/demo/mode';
 import { api, type Project, type User } from '@/lib/api';
 
 interface Session {
@@ -43,6 +45,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) return;
+    if (DEMO) {
+      // The demo's live events come from the in-browser engine, not a socket server.
+      setSocket(demoSocket as unknown as Socket);
+      return;
+    }
     const s = io(`${process.env.NEXT_PUBLIC_WS_URL ?? 'http://localhost:4000'}${WS_NAMESPACE}`, { withCredentials: true, transports: ['websocket', 'polling'], reconnectionDelayMax: 8000 });
     setSocket(s);
     return () => {

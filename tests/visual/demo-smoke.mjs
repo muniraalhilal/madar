@@ -1,0 +1,23 @@
+// Quick end-to-end smoke test of the static demo. Usage: node tests/visual/demo-smoke.mjs <outDir>
+import { chromium } from 'playwright';
+const out = process.argv[2];
+const base = process.env.SITE_URL ?? 'http://localhost:8090/madar/';
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+const errs = [];
+p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+p.on('pageerror', (e) => errs.push(String(e)));
+p.on('response', (r) => r.status() >= 400 && errs.push(`${r.status()} ${r.url()}`));
+await p.goto(base, { waitUntil: 'load' });
+await p.getByRole('link', { name: 'Enter MADAR' }).first().click();
+await p.getByRole('dialog').waitFor();
+await p.screenshot({ path: `${out}/1-welcome.png` });
+await p.getByRole('button', { name: 'Explore demo' }).click();
+await p.waitForURL(/\/app\/?$/);
+await p.waitForTimeout(800);
+await p.screenshot({ path: `${out}/2-boot.png` });
+await p.getByText('Recent runs').waitFor({ timeout: 60000 });
+await p.waitForTimeout(1500);
+await p.screenshot({ path: `${out}/3-dashboard.png`, fullPage: true });
+console.log('errors', errs);
+await b.close();

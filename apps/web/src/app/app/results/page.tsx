@@ -4,13 +4,14 @@ import { useSession } from '@/components/app/session';
 import { Empty, ErrorNote, fmt, PageHeader, Skeleton, StatusBadge } from '@/components/app/ui';
 import type { Run } from '@/lib/api';
 import { useApi } from '@/lib/useApi';
+import { href } from '@/lib/routes';
 
 export default function ResultsList() {
   const { project } = useSession();
   const runs = useApi<Run[]>(project ? `/projects/${project.id}/runs` : null);
   return (
     <>
-      <PageHeader title="Simulation results" description="Every run is stored with its exact inputs, engine version and a result fingerprint." />
+      <PageHeader title="Simulation results" description="Every run is stored with its exact inputs, engine version and a result fingerprint." actions={runs.data && runs.data.filter((r) => r.status === 'completed').length >= 2 && <Link href="/app/compare" className="pill pill-primary !py-2.5">Compare two runs</Link>} />
       {runs.loading && <Skeleton className="h-64" />}
       {runs.error && <ErrorNote>{runs.error}</ErrorNote>}
       {runs.data?.length === 0 && <Empty title="No runs yet" action={<Link className="pill pill-primary" href="/app/scenarios">Open the Scenario Lab</Link>}>Run a scenario and its results will appear here.</Empty>}
@@ -32,7 +33,7 @@ export default function ResultsList() {
             <tbody>
               {runs.data.map((r) => (
                 <tr key={r.id} className="border-t border-line-dark hover:bg-white/[0.03]">
-                  <td className="px-4 py-3"><Link href={`/app/results/${r.id}`} className="text-white hover:text-lavender-soft">{r.scenarioName}</Link></td>
+                  <td className="px-4 py-3"><Link href={href.run(r.id)} className="text-white hover:text-lavender-soft">{r.scenarioName}</Link></td>
                   <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
                   <td className="px-4 py-3 tabular-nums">{fmt.s(r.summary?.meanTravelTime)}</td>
                   <td className="px-4 py-3 tabular-nums">{fmt.s(r.summary?.meanDelay)}</td>

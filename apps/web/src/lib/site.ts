@@ -5,7 +5,7 @@
  */
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 export const STATIC_SITE = process.env.NEXT_PUBLIC_STATIC_SITE === '1';
-const REPO_URL = process.env.NEXT_PUBLIC_REPO_URL ?? 'https://github.com';
+export const REPO_URL = process.env.NEXT_PUBLIC_REPO_URL ?? 'https://github.com/muniraalhilal/madar';
 
 /** Prefix a file in /public with the base path. */
 export const asset = (path: string) => `${BASE_PATH}${path}`;

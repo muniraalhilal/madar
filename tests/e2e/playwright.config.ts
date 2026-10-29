@@ -6,6 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: '.',
+  testIgnore: 'demo.spec.ts', // the static demo has its own config (demo.config.ts)
   timeout: 180_000,
   expect: { timeout: 60_000 }, // generous for first-hit compilation in dev mode
   fullyParallel: false,

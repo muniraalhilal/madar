@@ -1,26 +1,40 @@
 'use client';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Activity, Bell, Bookmark, Boxes, FileText, FlaskConical, Gauge, LayoutDashboard, LogOut, Menu, Settings, TriangleAlert, X, Zap } from 'lucide-react';
+import { Activity, Bell, Bookmark, Boxes, FileText, FlaskConical, Gauge, LayoutDashboard, LifeBuoy, LogOut, Menu, Settings, TriangleAlert, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LogoHorizontal } from '@/components/brand/Logo';
+import { DEMO } from '@/demo/mode';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
+import { appPath } from '@/lib/routes';
 import { useSession } from './session';
 
 const NAV = [
   { href: '/app', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/app/explorer', label: 'City Explorer', icon: Boxes },
-  { href: '/app/traffic', label: 'Traffic', icon: Activity },
-  { href: '/app/energy', label: 'Energy', icon: Zap },
-  { href: '/app/incidents', label: 'Incidents', icon: TriangleAlert },
+  { href: '/app/traffic', label: 'Movement', icon: Activity },
   { href: '/app/scenarios', label: 'Scenario Lab', icon: FlaskConical },
-  { href: '/app/results', label: 'Results', icon: Gauge },
+  { href: '/app/results', label: 'Results & comparison', icon: Gauge },
+  { href: '/app/energy', label: 'Buildings & energy', icon: Zap },
+  { href: '/app/incidents', label: 'Incidents', icon: TriangleAlert },
   { href: '/app/reports', label: 'Reports', icon: FileText },
   { href: '/app/saved', label: 'Saved', icon: Bookmark },
-  { href: '/app/settings', label: 'Settings', icon: Settings },
+  // Accounts exist only with the server; the demo explains itself instead.
+  DEMO ? { href: '/app/help', label: 'About the demo', icon: LifeBuoy } : { href: '/app/settings', label: 'Settings', icon: Settings },
 ];
+
+/** Persistent, quiet reminder that this is a demonstration on synthetic data. */
+function DemoBadge({ className }: { className?: string }) {
+  return (
+    <Link href="/app/help" className={cn('inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1.5 text-xs text-lavender-mist hover:border-lavender/60', className)} title="About the demo">
+      <span className="h-1.5 w-1.5 rounded-full bg-mint" aria-hidden="true" />
+      <span className="sm:hidden">Demo</span>
+      <span className="hidden sm:inline">Demo · Synthetic data</span>
+    </Link>
+  );
+}
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const path = usePathname();
@@ -78,7 +92,7 @@ function Notifications() {
             {items.map((n) => (
               <li key={n.id}>
                 <Dialog.Close asChild>
-                  <Link href={n.link ?? '/app'} className="block rounded-xl px-3 py-2.5 hover:bg-white/5">
+                  <Link href={appPath(n.link ?? '/app')} className="block rounded-xl px-3 py-2.5 hover:bg-white/5">
                     <p className="text-sm text-white">{n.title}</p>
                     <p className="text-xs text-sand/60">{n.body}</p>
                   </Link>
@@ -97,9 +111,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const logout = async () => {
+    if (DEMO) return router.push('/');
     await api('/auth/logout', { method: 'POST' }).catch(() => undefined);
     router.replace('/login');
   };
+  const exitLabel = DEMO ? 'Exit demo' : 'Sign out';
   return (
     <div className="min-h-[100svh] bg-ink text-sand lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-[100svh] flex-col border-r border-line-dark bg-midnight/60 px-4 py-5 lg:flex">
@@ -110,12 +126,21 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <NavList />
         </nav>
         <div className="rounded-2xl border border-line-dark p-3">
-          <p className="truncate text-sm text-white">{user?.displayName ?? '…'}</p>
-          <p className="truncate text-xs text-sand/55">
-            {user?.email} · {user?.role}
-          </p>
+          {DEMO ? (
+            <>
+              <p className="text-sm text-white">Demo visitor</p>
+              <p className="text-xs text-sand/55">Fictional city · synthetic data · kept in this browser</p>
+            </>
+          ) : (
+            <>
+              <p className="truncate text-sm text-white">{user?.displayName ?? '…'}</p>
+              <p className="truncate text-xs text-sand/55">
+                {user?.email} · {user?.role}
+              </p>
+            </>
+          )}
           <button onClick={logout} className="mt-3 inline-flex items-center gap-2 text-xs text-sand/70 hover:text-white">
-            <LogOut size={14} /> Sign out
+            <LogOut size={14} /> {exitLabel}
           </button>
         </div>
       </aside>
@@ -138,8 +163,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 <nav className="mt-6" aria-label="Application">
                   <NavList onNavigate={() => setOpen(false)} />
                 </nav>
-                <button onClick={logout} className="mt-6 inline-flex items-center gap-2 px-3 text-sm text-sand/70">
-                  <LogOut size={16} /> Sign out
+                {DEMO && <DemoBadge className="mt-6" />}
+                <button onClick={logout} className="mt-6 flex items-center gap-2 px-3 text-sm text-sand/70">
+                  <LogOut size={16} /> {exitLabel}
                 </button>
               </Dialog.Content>
             </Dialog.Portal>
@@ -151,7 +177,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             id="project-select"
             value={project?.id ?? ''}
             onChange={(e) => setProjectId(e.target.value)}
-            className="max-w-[60vw] truncate rounded-full border border-line-dark bg-night-2 px-4 py-2 text-sm text-sand focus:outline-none focus:ring-2 focus:ring-lavender/60"
+            className="max-w-[36vw] truncate rounded-full sm:max-w-[60vw] border border-line-dark bg-night-2 px-4 py-2 text-sm text-sand focus:outline-none focus:ring-2 focus:ring-lavender/60"
           >
             {projects.length === 0 && <option value="">No projects yet</option>}
             {projects.map((p) => (
@@ -161,7 +187,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
             ))}
           </select>
           <div className="ml-auto flex items-center gap-2">
+            {DEMO && <DemoBadge />}
             <Notifications />
+            {DEMO && (
+              <Link href="/" className="grid h-10 w-10 place-items-center rounded-full border border-line-dark text-sand/80 hover:text-white" aria-label="Exit demo to the home page" title="Exit demo">
+                <LogOut size={17} />
+              </Link>
+            )}
           </div>
         </header>
         <main id="main" className="px-4 py-6 md:px-8 md:py-8">

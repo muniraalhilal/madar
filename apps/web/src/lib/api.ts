@@ -1,4 +1,6 @@
 'use client';
+import { DemoHttpError, demoRequest } from '@/demo/backend';
+import { DEMO } from '@/demo/mode';
 /**
  * Typed client for the MADAR API. Requests go same-origin (/api → Next rewrite
  * → NestJS) with httpOnly cookies; state-changing calls carry the CSRF header.
@@ -25,6 +27,15 @@ async function refresh(): Promise<boolean> {
 
 export async function api<T = unknown>(path: string, init: RequestInit & { json?: unknown; retry?: boolean } = {}): Promise<T> {
   const { json, retry = true, ...rest } = init;
+  if (DEMO) {
+    // No server behind the demo: the same routes are answered in the browser.
+    try {
+      return await demoRequest<T>(path, { method: rest.method, json });
+    } catch (e) {
+      if (e instanceof DemoHttpError) throw new ApiError(e.status, e.message, e.issues);
+      throw e;
+    }
+  }
   const headers = new Headers(rest.headers);
   headers.set('X-Requested-With', 'madar');
   if (json !== undefined) headers.set('Content-Type', 'application/json');
@@ -73,4 +84,4 @@ export interface Scenario {
   incidents: { id: string; roadCode: string; roadName: string; kind: 'collision' | 'breakdown' | 'roadwork' | 'event'; severity: number; startS: number; durationS: number; description: string }[];
   runs: { id: string; status: RunStatus; progress: number; queuedAt: string; finishedAt: string | null; meanTravelTimeS: number | null; meanDelayS: number | null; throughputPerHour: number | null; resultFingerprint: string | null }[];
 }
-export interface ScenarioListItem { id: string; name: string; description: string; kind: 'baseline' | 'variant'; isSaved: boolean; updatedAt: string; runCount: number; latestRun: { id: string; status: RunStatus; meanTravelTimeS: number | null; meanDelayS: number | null; throughputPerHour: number | null } | null; changes: { signalOverrides: number; closures: number; incidents: number } }
+export interface ScenarioListItem { id: string; name: string; description: string; kind: 'baseline' | 'variant'; isSaved: boolean; /** Demo only: part of the sample study. */ sample?: boolean; updatedAt: string; runCount: number; latestRun: { id: string; status: RunStatus; meanTravelTimeS: number | null; meanDelayS: number | null; throughputPerHour: number | null } | null; changes: { signalOverrides: number; closures: number; incidents: number } }
